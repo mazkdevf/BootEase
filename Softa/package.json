@@ -1,0 +1,35 @@
+{
+  "name": "bootease",
+  "version": "1.0.0",
+  "description": "Voit ladata Windows tiedostot palvelimesta esimerkiksi LIVE USB -muistitikulle.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-builder build"
+  },
+  "author": "mazkdevf",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^26.1.0",
+    "electron-builder": "^24.6.3"
+  },
+  "build": {
+    "productName": "Bootease",
+    "appId": "com.mazkdevf.bootease",
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "node_modules/**/*",
+      "icon.png",
+      "icon.ico"
+    ]
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "electron-dl": "^3.5.0",
+    "fs": "^0.0.1-security",
+    "jquery": "^3.7.1",
+    "node-fetch": "^2.7.0"
+  }
+}
