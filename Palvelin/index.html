@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#242423] overflow-y-hidden">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BootEase - Windows PE Lataukset</title>
+    <link rel="stylesheet" href="./output.css">
+</head>
+
+<body>
+    <div class="grid h-screen place-items-center" id="loader">
+        <div>
+            <svg class="w-32 h-32" stroke="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    .spinner_V8m1 {
+                        transform-origin: center;
+                        animation: spinner_zKoa 2s linear infinite
+                    }
+
+                    .spinner_V8m1 circle {
+                        stroke-linecap: round;
+                        animation: spinner_YpZS 1.5s ease-in-out infinite
+                    }
+
+                    @keyframes spinner_zKoa {
+                        100% {
+                            transform: rotate(360deg)
+                        }
+                    }
+
+                    @keyframes spinner_YpZS {
+                        0% {
+                            stroke-dasharray: 0 150;
+                            stroke-dashoffset: 0
+                        }
+
+                        47.5% {
+                            stroke-dasharray: 42 150;
+                            stroke-dashoffset: -16
+                        }
+
+                        95%,
+                        100% {
+                            stroke-dasharray: 42 150;
+                            stroke-dashoffset: -59
+                        }
+                    }
+                </style>
+                <g class="spinner_V8m1">
+                    <circle cx="12" cy="12" r="9.5" fill="none" stroke-width="3"></circle>
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', async function () {
+            await new Promise(r => setTimeout(r, 3000));
+            document.getElementById('loader').remove();
+            document.getElementById('main').classList.add('fade-in');
+            document.getElementById('loader').classList.add('fade-out');
+        });
+
+    </script>
+
+
+    <section class="grid h-screen place-items-center" id="main">
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-400">
+                <caption class="p-5 text-lg font-semibold text-left text-white bg-[#212120]">
+                    <span class="text-[#F5CB5C]">Windows</span> PE Lataukset
+                    <p class="mt-1 text-sm font-normal text-gray-400">
+                        Alla näet kaikki ne Windows-lataukset, jotka on tallennettu palvelimelle. Voit ladata nämä
+                        tiedostot palvelimesta esimerkiksi LIVE USB -muistitikulle.
+                    </p>
+                </caption>
+                <thead class="text-xs uppercase bg-[#212120] text-gray-400" id="tableHead">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            Windows
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Size
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Type
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Date
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Status
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="border-t border-[#1C1C1B]" id="tablenbody"></tbody>
+            </table>
+            <div class="p-5 text-lg font-semibold text-left text-white bg-[#212120]" id="downloadPanel">
+                <div class="flex justify-between mb-1 mt-1">
+                    <span class="text-base font-medium text-white">
+                        Ladataan...
+                    </span>
+                    <span class="text-sm font-medium text-white" id="percent">0</span>
+                </div>
+                <div class="w-full bg-[#171716] rounded-full h-2.5">
+                    <div class="bg-[#F5CB5C] h-2.5 rounded-full" id="download-progress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const downloadsPath = ipcRenderer.sendSync('get-downloads-path');
+            document.getElementById('downloads-path').textContent = downloadsPath;
+        });
+
+        let lastPercent = -1;
+
+        ipcRenderer.on('download-start', async (event, item) => {
+            await document.getElementById('downloadPanel').classList.add('fade-in');
+        });
+
+
+        ipcRenderer.on('download-end', async (event, item) => {
+            await document.getElementById('downloadPanel').classList.add('fade-out');
+        });
+
+        ipcRenderer.on('download-progress', (event, progress) => {
+            const percent = Math.floor(progress.percent);
+            const progressBar = document.getElementById('download-progress');
+            const percentText = document.getElementById('percent');
+            progressBar.style.width = `${percent}%`;
+            percentText.textContent = `${percent}%`;
+            lastPercent = percent;
+        });
+    </script>
+</body>
+
+</html>
